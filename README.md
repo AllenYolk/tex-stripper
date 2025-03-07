@@ -6,7 +6,19 @@ Grammarly is a popular tool for checking grammar and spelling errors in English 
 
 ## Installation and Usage
 
-...
+1. Clone the repository:
+
+```shell
+git clone https://github.com/AllenYolk/tex-stripper.git
+```
+
+2. Run the script with Python:
+
+```shell
+python tex_stripper.py -s <path_to_source_file> -o <path_to_output_file>
+```
+
+TODO: add `setup.py` to make `texstripper` a globally available command-line tool.
 
 ## Functionality
 
