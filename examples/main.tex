@@ -11,15 +11,25 @@ Distinguishing themselves from point neuron models widely employed in deep learn
     \includegraphics[width=\textwidth]{img/final/dendsn.drawio.pdf}
     \caption{
         \textbf{The DendSN model and its simulation results.}
-        \textbf{a)} A schematic illustration of a rat layer-5 pyramidal cell's (L5PC) morphology \cite{beniaguev2021cortical}. 
-        \textbf{b)} Our proposed DendSN model. It simplifies a multi-compartment model from three aspects: spatial structure, local dynamics, and signal transmission mechanism (blue boxes). A strength value is assigned to each dendritic branch at each time step, greatly enhancing the model's expressivity (red box).
-        \textbf{c), d)} The computational overhead of different neuron models on a GPU. Here, ``DendSN, Parallel" means a DendSN whose dendritic dynamics are computed in parallel across both time and branches, while ``DendSN, Vanilla" is a DendSN simulated with the vanilla Euler method. ``Simulation time cost" refers to the total time required to sequentially process 512 randomly generated input samples of length $T$. The data in Subfigure d is obtained by averaging the time costs along all the conditions of $B$ while keeping the $T$ conditions.
-        \textbf{e)} An illustration of the L5PC fitting experiment. For DendSN conditions, $B$ is set to $2$, representing the apical and basal dendrites. The presynaptic spikes are weighted by synaptic strengths, summed, and then fed into the branches. Parameters in the circles are optimized using gradient descent. For point SN conditions, the weighted sum of all the spikes is directly fed into the soma.
-        \textbf{f)} The fitting losses of different models on the test set. Here, ``USwish2" means USwish dendritic nonlinear activation (see \nameref{sec:methods}) and $B=2$.
-        \textbf{g),h)} The somatic membrane potential of a detailed multi-compartment L5PC model (black, ground truth), a point neuron model (blue), and a DendSN with a fully learnable branch strength matrix (orange, dashed). The trial is selected from the test set.
+        \begin{itemize}
+        \item \textbf{a)} A schematic illustration of a rat layer-5 pyramidal cell's (L5PC) morphology \cite{beniaguev2021cortical}. 
+        \item \textbf{b)} Our proposed DendSN model. It simplifies a multi-compartment model from three aspects: spatial structure, local dynamics, and signal transmission mechanism (blue boxes). A strength value is assigned to each dendritic branch at each time step, greatly enhancing the model's expressivity (red box).
+        \item \textbf{c), d)} The computational overhead of different neuron models on a GPU. Here, ``DendSN, Parallel" means a DendSN whose dendritic dynamics are computed in parallel across both time and branches, while ``DendSN, Vanilla" is a DendSN simulated with the vanilla Euler method. ``Simulation time cost" refers to the total time required to sequentially process 512 randomly generated input samples of length $T$. The data in Subfigure d is obtained by averaging the time costs along all the conditions of $B$ while keeping the $T$ conditions.
+        \end{itemize}
+        \begin{enumerate}
+        \item \textbf{e)} An illustration of the L5PC fitting experiment. For DendSN conditions, $B$ is set to $2$, representing the apical and basal dendrites. The presynaptic spikes are weighted by synaptic strengths, summed, and then fed into the branches. Parameters in the circles are optimized using gradient descent. For point SN conditions, the weighted sum of all the spikes is directly fed into the soma.
+        \item \textbf{f)} The fitting losses of different models on the test set. Here, ``USwish2" means USwish dendritic nonlinear activation (see \nameref{sec:methods}) and $B=2$.
+        \item \textbf{g),h)} The somatic membrane potential of a detailed multi-compartment L5PC model (black, ground truth), a point neuron model (blue), and a DendSN with a fully learnable branch strength matrix (orange, dashed). The trial is selected from the test set.
+        \end{enumerate}
     }
     \label{fig:dendsn}
 \end{figure}
+
+Let's input the Introduction Section from main.tex:
+\input{sections/1_introduction}
+
+Let's include a table from main.tex:
+\include{tables/bnws_ablation}
 
 We propose the dendritic spiking neuron (DendSN) model illustrated in Figure \ref{fig:dendsn}b to strike this delicate balance. The simulation process is carried out over $T$ discrete time steps using the Euler method, just as the standard practice in SNNs. Structurally, the neuron comprises $B$ parallel dendritic branches and a soma. The $i$-th dendritic branch possesses a single state variable $V_i^d$, representing the dendritic local potential. At each time step $t$, the potential undergoes an update based on synaptic input $X_i$, and decays exponentially over time with a factor $\alpha$. 
 \begin{equation}\label{eq:results-dend}
@@ -30,30 +40,30 @@ $V_i^d[t]$ is then activated by a nonlinear function $f_i$  and subsequently wei
     Y[t] = \sum_{i=0}^{B-1}Y_i[t] = \sum_{i=0}^{B-1} K_{t,i} f_i(V_i^d[t]), \ t \in \{0,\dots,T-1\}
 \end{equation}
 Finally, the soma is a LIF neuron with a unary state variable $V^s$ as the somatic membrane potential \cite{lapicque1907lif}. It charges through the aggregated dendrite-to-soma signal $Y$, decays exponentially with a factor $\beta$, emits a spike when $V^s$ exceeds a threshold $V_{\mathrm{th}}^s$, and resets to $V^{s}_{\mathrm{reset}}$ after firing. The somatic dynamics can be described as
-\begin{equation}\label{eq:results-LIFsoma}
+\begin{equation*}\label{eq:results-LIFsoma}
     \begin{aligned}
         H^s[t] &= \beta V^s[t-1] + (1-\beta)Y[t] \\ 
         S[t] &= \Theta(H^s[t] - V^s_{\mathrm{th}}) \\
         V^s[t] &= (1 - S[t])H^s[t] + S[t]V^s_{\mathrm{reset}}
     \end{aligned}
-\end{equation}
+\end{equation*}
 where $H^s$ is the somatic potential before spike emission, and $\Theta$ is the Heaviside step function.
 
 \begin{table}[t]
 \centering
 \caption{
-    Performance comparison of different scaled weight standardization (sWS) and batch normalization (BN) configurations on Sequential CIFAR-10/100.  $^\ddagger$ denotes BN applied after the spiking neuron layer. Acc$_A$ means accuracy under the ``accumulate'' condition, while Acc$_O$ means accuracy under the ``on-the-fly'' condition.
+    You know, this is a table!!! Yes! Look at me!
 }
 \label{tab:bnws-ablation}
 \begin{tabularx}{0.48\textwidth}{@{}cccCCCC@{}}
     \toprule
     \multirow{2}{*}{Method} & \multirow{2}{*}{sWS} & \multirow{2}{*}{BN} & \multicolumn{2}{c}{Seq. CIFAR-10} & \multicolumn{2}{c}{Seq. CIFAR-100} \\ \cmidrule(lr){4-5} \cmidrule(lr){6-7} 
     &  &  & Acc$_A$\% & Acc$_O$\% & Acc$_A$\% & Acc$_O$\% \\ \midrule
-    \multirow{3}{*}{\rotatebox{90}{OTTT}} & \checkmark & \crossmark & 73.31 & 73.64 & 46.60 & 46.92 \\
-    & \crossmark & \checkmark & 56.68 & 55.45 & 24.09 & 26.57 \\
-    & \crossmark & \checkmark$^\ddagger$ & 74.48 & 74.26 & 46.21 & 46.54 \\ \midrule
-    \multirow{4}{*}{\rotatebox{90}{OTCR}} & \crossmark & \crossmark & 73.57 & 73.95 & 44.45 & 45.25 \\
-    & \checkmark & \crossmark & 73.48 & 73.66 & 46.43 & 46.62 \\
+    \multirow{3}{*}{\rotatebox{90}{asdljfl}} & \checkmark & \crossmark & 73.31 & 73.64 & 46.60 & 46.92 \\
+    & \crossmark & \checkmark & 5dsaf68 & 55.45 & 2asdf9 & 2ii \\
+    & \crossmark & \checkmark$^\ddagger$ & 74.48 & 74.26 & 46asdf & 1114 \\ \midrule
+    \multirow{4}{*}{\rotatebox{90}{OasdfR}} & \crossmark & \crossmark & 73.57 & 9435 & 44.45 & 45.25 \\
+    & \checkmark & \crossmark & 73.4as-8 & sadf;o & 46.43 & 46.62 \\
     & \highlightcell \crossmark & \highlightcell \checkmark$^\ddagger$ & \highlightcell \textbf{75.06} & \highlightcell \textbf{74.99} & \highlightcell \textbf{47.01} & \highlightcell \textbf{47.28} \\
     & \checkmark & \checkmark$^\ddagger$ & 73.31 & 72.94 & 46.17 & 46.50 \\ \bottomrule
 \end{tabularx}
@@ -70,7 +80,7 @@ In summary, DendSN stands as a streamlined yet expressive model for dendritic ne
 \subsection*{Dendritic spiking neural networks and their supervised training}
 \label{subsec:results-dendsnn}
 
-\begin{figure}[tp!]
+\begin{figure*}[tp!]
     \centering
     \includegraphics[width=\textwidth]{img/final/dendsnn.drawio.pdf}
     \caption{
@@ -82,7 +92,7 @@ In summary, DendSN stands as a streamlined yet expressive model for dendritic ne
         \textbf{d)} Classification accuracies on the N-MNIST dataset. DendSNNs achieve better performances than point SNNs on different time resolution settings ($T=4,8$).
     }
     \label{fig:dendsnn}
-\end{figure}
+\end{figure*}
 
 The efficacy of modern deep learning stems from the vast scale and well-crafted structure of neural networks. Deep network architectures like ResNet \cite{he2016resnet} and Transformer \cite{vaswani2017transformer} have been widely embraced for tackling machine learning problems in diverse domains. Pioneering works in the field of SNN have leveraged these advantageous design principles and built up their spiking counterparts, outperforming those plain and shallow SNNs \cite{zheng2020going,fang2021sew,hu2023advancing,zhou2023spikformer,zhou2023spikingformer,yao2023spikedriventransformer,yao2024spikedriventransformer}. Here, we integrate our DendSN into various deep SNNs with commonly used architectures, aiming to fully harness both the expressive power of DendSN and the capabilities of deep networks for tackling complex tasks.
 

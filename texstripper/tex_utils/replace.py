@@ -5,6 +5,8 @@ REF_PLACEHOLDER_FORMAT = "{}"
 EQREF_PLACEHOLDER_FORMAT = "({})"
 NAMEREF_PLACEHOLDER_FORMAT = "<{}>"
 
+INPUT_PLACEHOLDER = "<INPUT>"
+INCLUDE_PLACEHOLDER = "<INCLUDE>"
 MATH_PLACEHOLDER = "<MATH>"
 
 
@@ -17,7 +19,8 @@ def _replace_tilde_pattern_with_format(
 
     Args:
         lines (list): a list of stripped lines
-        pattern (str): a regular expression pattern without preceding tilde ~
+        pattern (str): a regular expression pattern without preceding tilde ~.
+            Should not have any capturing groups!!!
         placeholder_format (str): a placeholder format
 
     Returns
@@ -44,7 +47,8 @@ def _replace_tilde_pattern(lines, pattern, placeholder) -> list:
 
     Args:
         lines (list): a list of stripped lines
-        pattern (str): a regular expression pattern without preceding tilde ~
+        pattern (str): a regular expression pattern without preceding tilde ~.
+            Should not have any capturing groups!!!
         placeholder (str): a placeholder
 
     Returns
@@ -148,7 +152,8 @@ def replace_math_blocks(lines) -> list:
     text = "\n".join(lines)
 
     pattern = re.compile(
-        r"\\begin{(equation|align)}.*?\\end{(equation|align)}", re.DOTALL
+        r"\\begin\{(equation|align)\*?\}.*?\\end\{(equation|align)\*?\}",
+        re.DOTALL
     )
     text = pattern.sub(MATH_PLACEHOLDER, text)
 
@@ -156,3 +161,16 @@ def replace_math_blocks(lines) -> list:
     lines = [l.strip() for l in lines if l.strip()]
 
     return lines
+
+
+def replace_input_and_include(lines) -> list:
+    """Replace input and include commands with a placeholder.
+
+    Args:
+        lines (list): a list of stripped lines
+
+    Returns:
+        a list of stripped lines with input and include commands replaced by placeholders
+    """
+    lines = _replace_tilde_pattern(lines, r"\\input{.*?}", INPUT_PLACEHOLDER)
+    return _replace_tilde_pattern(lines, r"\\include{.*?}", INCLUDE_PLACEHOLDER)
