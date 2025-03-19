@@ -30,7 +30,7 @@ pip install .
 ## Usage
 
 ```shell
-python texstripper/cli.py -s <path_to_source_file> -o <path_to_output_file>
+texstripper -s <path_to_source_file> -o <path_to_output_file>
 ```
 
 ## Functionality
